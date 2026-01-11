@@ -3,6 +3,7 @@
 > Transform your daily tasks into an epic pixel-art adventure!
 
 A gamified task management application where completing real-life tasks advances your pixel character through a beautiful journey.
+more  wa
 
 ## 🚀 Quick Start
 
