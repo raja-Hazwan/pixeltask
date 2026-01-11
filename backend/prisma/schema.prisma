@@ -1,0 +1,214 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String      @id @default(uuid())
+  email         String      @unique
+  username      String      @unique
+  password      String
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  character     Character?
+  tasks         Task[]
+  achievements  UserAchievement[]
+  streaks       Streak[]
+}
+
+model Character {
+  id                String   @id @default(uuid())
+  userId            String   @unique
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  name              String
+  level             Int      @default(1)
+  currentXP         Int      @default(0)
+  totalXP           Int      @default(0)
+  coins             Int      @default(0)
+
+  // Stats
+  productivity      Int      @default(0)
+  consistency       Int      @default(0)
+  focus             Int      @default(0)
+
+  // Journey progress
+  distanceTraveled  Float    @default(0)
+  currentBiome      String   @default("Forest")
+
+  // Customization
+  avatarSkin        String   @default("default")
+  avatarColor       String   @default("#FFA500")
+  accessories       Json     @default("[]")
+
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  inventory         InventoryItem[]
+  pets              Pet[]
+}
+
+model Task {
+  id              String    @id @default(uuid())
+  userId          String
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  title           String
+  description     String?
+  category        TaskCategory @default(PERSONAL)
+  priority        Priority  @default(MEDIUM)
+  status          TaskStatus @default(PENDING)
+
+  estimatedTime   Int?      // in minutes
+  actualTime      Int?      // in minutes
+
+  dueDate         DateTime?
+  completedAt     DateTime?
+
+  // Gamification
+  xpReward        Int       @default(0)
+  coinsReward     Int       @default(0)
+  distanceReward  Float     @default(0)
+
+  // Recurrence
+  isRecurring     Boolean   @default(false)
+  recurrenceRule  String?   // cron-like pattern
+
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  subtasks        SubTask[]
+  attachments     Attachment[]
+}
+
+model SubTask {
+  id          String      @id @default(uuid())
+  taskId      String
+  task        Task        @relation(fields: [taskId], references: [id], onDelete: Cascade)
+
+  title       String
+  completed   Boolean     @default(false)
+  order       Int         @default(0)
+
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+}
+
+model Attachment {
+  id          String   @id @default(uuid())
+  taskId      String
+  task        Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
+
+  fileName    String
+  fileUrl     String
+  fileType    String
+  fileSize    Int
+
+  createdAt   DateTime @default(now())
+}
+
+model Achievement {
+  id          String   @id @default(uuid())
+  name        String   @unique
+  description String
+  icon        String
+  category    String
+
+  // Requirements
+  requirement Json     // Flexible JSON for various requirement types
+
+  // Rewards
+  xpReward    Int      @default(0)
+  coinsReward Int      @default(0)
+  itemReward  String?  // Item ID to unlock
+
+  users       UserAchievement[]
+}
+
+model UserAchievement {
+  id            String      @id @default(uuid())
+  userId        String
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  achievementId String
+  achievement   Achievement @relation(fields: [achievementId], references: [id], onDelete: Cascade)
+
+  unlockedAt    DateTime    @default(now())
+
+  @@unique([userId, achievementId])
+}
+
+model Streak {
+  id            String   @id @default(uuid())
+  userId        String
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  currentStreak Int      @default(0)
+  longestStreak Int      @default(0)
+  lastActiveDate DateTime @default(now())
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model InventoryItem {
+  id          String    @id @default(uuid())
+  characterId String
+  character   Character @relation(fields: [characterId], references: [id], onDelete: Cascade)
+
+  itemType    ItemType
+  itemId      String    // Reference to specific item in game data
+  quantity    Int       @default(1)
+  equipped    Boolean   @default(false)
+
+  acquiredAt  DateTime  @default(now())
+}
+
+model Pet {
+  id          String    @id @default(uuid())
+  characterId String
+  character   Character @relation(fields: [characterId], references: [id], onDelete: Cascade)
+
+  name        String
+  species     String
+  level       Int       @default(1)
+  happiness   Int       @default(100)
+  active      Boolean   @default(false)
+
+  acquiredAt  DateTime  @default(now())
+  lastFed     DateTime  @default(now())
+}
+
+// Enums
+enum TaskCategory {
+  WORK
+  PERSONAL
+  LEARNING
+  HEALTH
+  CREATIVE
+}
+
+enum Priority {
+  LOW
+  MEDIUM
+  HIGH
+}
+
+enum TaskStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+enum ItemType {
+  ACCESSORY
+  CLOTHING
+  FURNITURE
+  CONSUMABLE
+  PET
+}

@@ -1,0 +1,28 @@
+{
+  "name": "pixel-quest-planner",
+  "version": "1.0.0",
+  "description": "A gamified task management application with pixel-art adventure",
+  "private": true,
+  "workspaces": [
+    "frontend",
+    "backend"
+  ],
+  "scripts": {
+    "install:all": "npm install && cd backend && npm install && cd ../frontend && npm install",
+    "dev:backend": "cd backend && npm run dev",
+    "dev:frontend": "cd frontend && npm run dev",
+    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "build:backend": "cd backend && npm run build",
+    "build:frontend": "cd frontend && npm run build",
+    "build": "npm run build:backend && npm run build:frontend",
+    "docker:up": "cd docker && docker-compose up",
+    "docker:down": "cd docker && docker-compose down",
+    "docker:build": "cd docker && docker-compose build"
+  },
+  "keywords": ["pixel", "quest", "planner", "gamification", "tasks", "productivity"],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
