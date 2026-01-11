@@ -11,7 +11,7 @@ more  waa testing
 
 - Node.js 18+ and npma
 - PostgreSQL 15+
-- Redis (optional, for caching)fff
+- Redis (optional, for caching)fffa
 - Git test more ofterefd
 ee
 ### Installation
