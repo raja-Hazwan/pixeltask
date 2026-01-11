@@ -11,7 +11,7 @@ A gamified task management application where completing real-life tasks advances
 - Node.js 18+ and npm
 - PostgreSQL 15+
 - Redis (optional, for caching)
-- Git
+- Git test
 
 ### Installation
 
