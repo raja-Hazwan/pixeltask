@@ -9,7 +9,7 @@ more  waa testing
 
 ### Prerequisites
 
-- Node.js 18+ and npm
+- Node.js 18+ and npma
 - PostgreSQL 15+
 - Redis (optional, for caching)fff
 - Git test more ofterefd
